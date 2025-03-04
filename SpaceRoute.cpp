@@ -34,28 +34,140 @@ private:
     Node<T>* tail;
 
 public:
-    SpaceRoute();  // Constructor
-    ~SpaceRoute(); // Destructor
-
-    void addWaypointAtBeginning(T& data);
-    void addWaypointAtEnd(T& data);
-    void addWaypointAtIndex(int index, T& data);
-    void removeWaypointAtBeginning();
-    void removeWaypointAtEnd();
-    void removeWaypointAtIndex(int index);
-    void traverseForward();
-    void traverseBackward();
-    Node<T>* getWaypoint(int index);
-    void setWaypoint(int index, T& data);
-    void print(){
-
-            Node<T>* current = head;
-            while (current) {
-                current->print();
-                current = current->next;
-            }
-            cout << endl;
+    SpaceRoute() { // Constructor
+        head = nullptr;
+        tail = nullptr;
+    }
+    ~SpaceRoute() { // Destructor
+        while (head != nullptr) {
+            Node<T>* temp = head;
+            head = head->next;
+            delete temp;
         }
+    }
 
+    void addWaypointAtBeginning(T& data) {
+        Node<T>* newNode = new Node<T>(data);
+        if (head == nullptr) {
+            head = newNode;
+            tail = newNode;
+        }
+        else {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+    }
+
+    void addWaypointAtEnd(T& data) {
+        Node<T>* newNode = new Node<T>(data);
+        if (tail ==nullptr) {
+            head = newNode;
+            tail = newNode;
+        }
+        else {
+            newNode->prev = tail;
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    void addWaypointAtIndex(int index, T& data) {
+         Node<T>* current = head;
+        for (int i = 0; i < index - 1 && current != nullptr; i++) {
+            current = current->next;
+        }
+        if (current == nullptr) {
+            addWaypointAtEnd(data);
+        }
+        else {
+            Node<T>* newNode = new Node<T>(data);
+            newNode->next = current->next;
+            newNode->prev = current;
+            if (current->next != nullptr) {
+                current->next->prev = newNode;
+            }
+            else {
+                tail = newNode;
+            }
+        current->next = newNode;
+        }
+    }
+
+    void removeWaypointAtBeginning() {
+        head = head->next;
+        if (head != nullptr) {
+            head->prev = nullptr;
+        }
+        else {
+            tail = nullptr;
+        }
+    }
+
+    void removeWaypointAtEnd() {
+        tail = tail->prev;
+        if (tail != nullptr) {
+            tail->next = nullptr;
+        }
+        else {
+            head= nullptr;
+        }
+    }
+
+    void removeWaypointAtIndex(int index) {
+        Node<T>* current = head;
+
+        for (int i = 1; i < index && current != nullptr; i++) {
+            current = current->next;
+        }
+        if (current == nullptr) return;
+
+        if (current == tail) {
+            removeWaypointAtEnd();
+            return;
+        }
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+        delete current;
+    }
+
+
+    void traverseForward() {
+        Node<T>* current = head;
+        while (current != nullptr) {
+            current->print();
+            current = current->next;
+        }
+    }
+    void traverseBackward() {
+        Node<T>* current = tail;
+        while (current != nullptr) {
+            current->print();
+            current = current->prev;
+        }
+    }
+
+    Node<T>* getWaypoint(int index) {
+        if (index < 0 ) return nullptr;
+        Node<T>* current = head;
+        for (int i = 1; i < index && current != nullptr; i++) {
+            current = current->next;
+        }
+        return current;
+    }
+
+    void setWaypoint(int index, T& data) {
+        Node<T>* newNode = getWaypoint(index);
+        if (newNode != nullptr) {
+            newNode->data = data;
+        }
+    }
+    void print(){
+        Node<T>* current = head;
+        while (current) {
+            current->print();
+            current = current->next;
+        }
+        cout << endl;
+    }
 };
-
